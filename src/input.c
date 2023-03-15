@@ -1,9 +1,5 @@
 #include "../include/input.h"
 
-void print_x(int x) {
-    printf("%d\n", x);
-}
-
 char *get_str() {
     char buffer;
     unsigned int size = 0;
@@ -154,9 +150,9 @@ char* get_str_without_char(const char* prompt, const char* invaild_chars) {
     return name;
 }
 
-bool check_for_invaild_char_in_DOB(char* input) {
+bool check_for_ints(char* input, int x, int y) {
     for (int i = 0; i < strlen(input); i++) {
-        if (i != 2 && i != 5) {
+        if (i != x && i != y) {
             if (!isdigit(input[i])) {
                 free(input);
                 printf("Invaild char in input str\n");
@@ -236,7 +232,7 @@ char* get_DOB() {
         }
 
         //Check for digits in DOB
-        if (check_for_invaild_char_in_DOB(DOB))
+        if (check_for_ints(DOB, 2, 5))
             continue;
 
         if (!check_DOB_date(DOB)) {
@@ -247,4 +243,31 @@ char* get_DOB() {
 
         return DOB;
     }
+}
+
+char* get_SSN() {
+    char* SSN = "";
+    while (true) {
+        printf("Please type in your SSN in XXX-XX-XXXX format: ");
+        SSN = get_str();
+
+        //Check SSN size, must be 11
+        if (strlen(SSN) != 11) {
+            printf("SSN must have 9 digits and 2 dashes\n");
+            free(SSN);
+            continue;
+        }
+
+        if (SSN[3] != '-' || SSN[6] != '-') {
+            printf("You must type in SSN as XXX-XX-XXXX format\n");
+            free(SSN);
+            continue;
+        }
+
+        if (check_for_ints(SSN, 3, 6)) {
+            continue;
+        }
+        return SSN;
+    }
+
 }

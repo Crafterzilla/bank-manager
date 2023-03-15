@@ -54,4 +54,5 @@ void user_creation_portal() {
     //Get user date of birth
     new_user.DOB = get_DOB();
 
+    new_user.SSN = get_SSN();
 }
