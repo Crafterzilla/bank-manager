@@ -50,4 +50,8 @@ void user_creation_portal() {
     invaild_chars = "!@#$%%^&*()_=+{}[]/><;,`~:";
     new_user.last_name = get_str_without_char("What is your last name: ", invaild_chars);
     puts("");
+
+    //Get user date of birth
+    new_user.DOB = get_DOB();
+
 }

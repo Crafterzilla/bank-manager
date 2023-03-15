@@ -153,3 +153,98 @@ char* get_str_without_char(const char* prompt, const char* invaild_chars) {
     }
     return name;
 }
+
+bool check_for_invaild_char_in_DOB(char* input) {
+    for (int i = 0; i < strlen(input); i++) {
+        if (i != 2 && i != 5) {
+            if (!isdigit(input[i])) {
+                free(input);
+                printf("Invaild char in input str\n");
+                return true;
+            }
+        }
+    } 
+    return false;
+}
+
+time_t convert_time_to_unix_time(int month, int day, int year) {
+    return (31556926 * (year - 1970)) + (86400 * (day - 1)) + (2629743 * (month - 1)); 
+}
+
+bool check_DOB_date(const char* DOB) {
+    //Convert big str to small str
+    const char month_str[] = {DOB[0], DOB[1], '\0'};
+    const char day_str[] = {DOB[3], DOB[4], '\0'};
+    const char year_str[] = {DOB[6], DOB[7], DOB[8], DOB[9], '\0'};
+
+    //Convert str to int
+    int month = atoi(month_str), day = atoi(day_str), year = atoi(year_str);
+
+    //Check to ensure time isn't greater than current time
+    int current_time = time(NULL);
+    const time_t u_time = convert_time_to_unix_time(month, day, year);
+
+    if (u_time > current_time) {
+        return false;
+    }
+
+    //check year
+    if(year >= 1900 && year <= 9999) {
+        //check month
+        if(month >= 1 && month <= 12) {
+            //check days
+            if((day >= 1 && day <= 31) && (month == 1 || month == 3 || month == 5 || month == 7 || month ==8 || month == 10 || month == 12))
+                return true;
+            else if((day >= 1 && day <= 30) && (month == 4 || month == 6 || month == 9 || month == 11))
+                return true;
+            else if((day >= 1 && day <= 28) && (month == 2))
+                return true;
+            else if(day == 29 && month == 2 && (year % 400 == 0 ||(year % 4== 0  && year % 100 != 0)))
+                return true;
+            else
+                return false;
+            }
+        else {
+            return false;
+        }
+    }
+    else {
+        return false;
+    }
+
+}
+
+char* get_DOB() {
+    char* DOB = "";
+    while (true) {
+        printf("Type in date of birth in XX/XX/XXXX format: ");
+        DOB = get_str();
+
+
+        //Check if DOB is 10 char long
+        if (strlen(DOB) != 10) {
+            printf("Date provided must be exaclty 10 char long. Invaild format\n");
+            free(DOB);
+            continue;
+        }
+
+        //Check if DOB has / in the right places
+        if (DOB[2] != '/' || DOB[5] != '/') {
+            printf("Char '/' not found in the right places. Invaild format\n");
+            free(DOB);
+            continue;
+        }
+
+        //Check for digits in DOB
+        if (check_for_invaild_char_in_DOB(DOB))
+            continue;
+
+        if (!check_DOB_date(DOB)) {
+            printf("The date is invaild\n");
+            free(DOB);
+            continue;
+        }
+
+        return DOB;
+    }
+}

@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <time.h>
 
 void print_x(int);
 char* get_str();
@@ -14,9 +15,12 @@ char get_yes_or_no(const char* prompt);
 
 bool invaild_char_in_str(const char* input, const char* invaild_char);
 char* get_str_without_char(const char* prompt, const char* invaild_char);
-char* get_DOB(const char* prompt);
 
-
+//DOB functions
+char* get_DOB();
+bool check_for_invaild_char_in_DOB(char* input);
+bool check_DOB_date(const char* DOB);
+time_t convert_time_to_unix_time(int, int, int);
 void collect_user_data();
 
 #endif
