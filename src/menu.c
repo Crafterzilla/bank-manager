@@ -57,5 +57,8 @@ void user_creation_portal() {
     //Get user SSN
     new_user.SSN = get_SSN();
 
+    //Get user address
     new_user.address = get_address();
+
+    new_user.phone_number = get_phone_number();
 }

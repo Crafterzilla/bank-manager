@@ -23,6 +23,7 @@ time_t convert_time_to_unix_time(int, int, int);
 void collect_user_data();
 
 char* get_SSN();
+char* get_phone_number();
 
 //Address functions
 char* get_address();

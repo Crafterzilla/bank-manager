@@ -346,3 +346,24 @@ char* get_address() {
 
     return address;
 }
+
+char* get_phone_number() {
+    //
+    char* phone_num = "";
+    while (true) {
+        printf("Type in your phone number in XXX-XXX-XXXX format: ");
+        phone_num = get_str();
+
+        if (strlen(phone_num) != 12 || phone_num[3] != '-' || phone_num[7] != '-') {
+            printf("Phone number must have 10 digits and 2 dashes in XXX-XXX-XXXX format\n");
+            free(phone_num);
+            continue;
+        }
+
+        if (check_for_ints(phone_num, 3, 7)) {
+            continue;
+        }
+
+        return phone_num;
+    }
+}
