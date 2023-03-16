@@ -60,5 +60,9 @@ void user_creation_portal() {
     //Get user address
     new_user.address = get_address();
 
+    //Get user phone #
     new_user.phone_number = get_phone_number();
+
+    //Get user email
+    new_user.email = get_email();
 }

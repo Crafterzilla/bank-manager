@@ -24,6 +24,7 @@ void collect_user_data();
 
 char* get_SSN();
 char* get_phone_number();
+char* get_email();
 
 //Address functions
 char* get_address();

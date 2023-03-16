@@ -367,3 +367,29 @@ char* get_phone_number() {
         return phone_num;
     }
 }
+
+char* get_email() {
+    char* email = "";
+
+    while (true) {
+        printf("Type in your email: ");
+        email = get_str();
+
+        //Check to ensure @ and . are found
+        int at_counter = 0, dot_counter = 0;
+        for (int i = 0; i < strlen(email); i++) {
+            if (email[i] == '@')
+                at_counter++;
+            else if (email[i] == '.')
+                dot_counter++;
+        }
+
+        if (at_counter == 0 || dot_counter == 0) {
+            printf("Email must have an @ and domain name\n");
+            free(email);
+            continue;
+        }
+
+        return email;
+    }
+}
