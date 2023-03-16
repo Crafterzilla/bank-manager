@@ -271,3 +271,78 @@ char* get_SSN() {
     }
 
 }
+
+bool is_state_vaild(char* input) {
+    char state_abbv[][3] = {"AK","AL","AR","AS","AZ","CA","CO","CT","DC",
+    "DE","FL","GA","GU","HI","IA","ID","IL","IN","KS","KY","LA","MA","MD",
+    "ME","MI","MN","MO","MS","MT","NC","ND","NE","NH","NJ","NM","NV","NY",
+    "OH","OK","OR","PA","PR","RI","SC","SD","TN","TX","UT","VA","VI","VT",
+    "WA","WI","WV","WY"};
+    const int number_of_states = 55;
+
+    if (strlen(input) != 2) {
+        return false;
+    }
+
+    input[0] = toupper(input[0]);
+    input[1] = toupper(input[1]);
+
+    for (int i = 0; i < number_of_states; i++) {
+        if (strcmp(state_abbv[i], input) == 0)
+            return true;
+    }
+    return false;
+}
+
+char* get_address() {
+    char* street_address = "";
+    char* city = "", *state = "";
+    int zip_code = -1;
+
+    //Get Street Address 
+    printf("What is your street_address: ");
+    street_address = get_str();
+
+    //Get City
+    printf("What is your city: ");
+    city = get_str();
+
+    //Get State Abbv.
+    while (true) {
+        printf("What is your state abbreviation (Ex. NJ): ");
+        state = get_str();
+        if (!is_state_vaild(state)) {
+            printf("Invaild State. Try again\n");
+            free(state);
+        }
+        else {
+            break;
+        }
+    }
+
+    //Get zip_code
+    while (true) {
+        printf("What is your zip code: ");
+        zip_code = get_int("Invaild Number\nWhat is your zip code: ");
+        if (zip_code < 0 || zip_code > 99999)
+            printf("Invaild zip code. Range is 00000-99999\n");
+        else
+            break;
+    }
+
+
+    //Combine all strings into one
+    //street_add size + space + city size + space + comma + zip code + null
+    //+4 for spaces, commas, null, +5 for zip code
+    size_t new_str_len = strlen(city) + strlen(street_address) + strlen(state) + 10;
+    char* address = (char*)malloc(sizeof(char) * new_str_len);
+
+    sprintf(address, "%s %s, %s %05d", street_address, city, state, zip_code);
+
+    printf("You live in %s\n", address);
+    free(city);
+    free(street_address);
+    free(state); 
+
+    return address;
+}
