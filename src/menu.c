@@ -1,5 +1,6 @@
 #include "../include/menu.h"
 #include "../include/input.h"
+#include "../include/military_grade_cryption.h"
 
 bool login_prompt() {
     printf("Gull & Bull Bank Terminal Login Portal\n");   
@@ -65,4 +66,42 @@ void user_creation_portal() {
 
     //Get user email
     new_user.email = get_email();
+
+    //Get username
+    while (true) {
+        printf("Type in a username: ");
+        new_user.username = get_str();
+
+        printf("Retype username: ");
+        char* retry = get_str();
+
+        if (strcmp(new_user.username, retry) == 0) {
+            free(retry);
+            break;
+        }
+        else {
+            free(retry);
+            free(new_user.username);
+            printf("Usernames do not match\n");
+        }
+    }
+
+    //Get Password
+    while (true) {
+        printf("Type in a password: ");
+        new_user.password = get_str();
+
+        printf("Retype password: ");
+        char* retry = get_str();
+        if (strcmp(new_user.password, retry) == 0) {
+            free(retry);
+            break;
+        }
+        else {
+            free(retry);
+            free(new_user.password);
+            printf("Usernames do not match\n");
+        }
+    }
+    
 }
