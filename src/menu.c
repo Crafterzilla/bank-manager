@@ -35,7 +35,7 @@ void get_names(User* new_user) {
 }
 
 void user_creation_portal() {
-    User new_user = (User) {NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, 0, NULL, NULL};
+    User new_user = (User) {0, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, NULL, NULL};
 
     printf("Welcome to Gull & Bull User Creation Portal\n");
     printf("You will be guided to help you create a new user on our secure networks\n");
