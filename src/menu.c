@@ -1,6 +1,7 @@
 #include "../include/menu.h"
 #include "../include/input.h"
 #include "../include/military_grade_cryption.h"
+#include "../include/user.h"
 
 bool login_prompt() {
     printf("Gull & Bull Bank Terminal Login Portal\n");   
@@ -21,9 +22,20 @@ bool login_prompt() {
 void sign_in_portal() {
 
 }
+void get_names(User* new_user) {
+    const char* invaild_chars = "!@#$%%^&*()_=+{}[]/><;,`~: ";
+    new_user->first_name = get_str_without_char("What is your first name: ", invaild_chars);
+
+    char choice = get_yes_or_no("Do you have a middle name (y/n): ");
+    if (choice == 'y') 
+        new_user->middle_name = get_str_without_char("What is your middle name: ", invaild_chars);
+    
+    invaild_chars = "!@#$%%^&*()_=+{}[]/><;,`~:";
+    new_user->last_name = get_str_without_char("What is your last name: ", invaild_chars); 
+}
 
 void user_creation_portal() {
-    User new_user = (User) {"", "", "", "", "", "", 0, "", "", "", 0, "", ""};
+    User new_user = (User) {NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, 0, NULL, NULL};
 
     printf("Welcome to Gull & Bull User Creation Portal\n");
     printf("You will be guided to help you create a new user on our secure networks\n");
@@ -41,15 +53,7 @@ void user_creation_portal() {
     printf("Moving to Creation Portal...\n\n");
 
     //Get names of new user
-    const char* invaild_chars = "!@#$%%^&*()_=+{}[]/><;,`~: ";
-    new_user.first_name = get_str_without_char("What is your first name: ", invaild_chars);
-
-    choice = get_yes_or_no("Do you have a middle name (y/n): ");
-    if (choice == 'y') 
-        new_user.middle_name = get_str_without_char("What is your middle name: ", invaild_chars);
-
-    invaild_chars = "!@#$%%^&*()_=+{}[]/><;,`~:";
-    new_user.last_name = get_str_without_char("What is your last name: ", invaild_chars);
+    get_names(&new_user); 
     puts("");
 
     //Get user date of birth
@@ -70,6 +74,7 @@ void user_creation_portal() {
     //Get username
     while (true) {
         printf("Type in a username: ");
+       
         new_user.username = get_str();
 
         printf("Retype username: ");
@@ -102,6 +107,7 @@ void user_creation_portal() {
             free(new_user.password);
             printf("Usernames do not match\n");
         }
-    }
-    
+    } 
+
+    free_user(&new_user);
 }
