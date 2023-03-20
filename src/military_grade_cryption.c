@@ -11,7 +11,7 @@ void encrypt(char* input, int r) {
                 input[i] = 'a';
             else if (input[i] == '9')
                 input[i] = '0';
-            else if ((input[i] >= 'a' && input[i] < 'z') || (input[i] >= 'A' && input[i] < 'z')
+            else if ((input[i] >= 'a' && input[i] < 'z') || (input[i] >= 'A' && input[i] < 'Z')
             || (input[i] >= '0' && input[i] < '9'))
                 input[i]++;
         } 
@@ -29,7 +29,7 @@ void decrypt(char * input, int r) {
                 input[i] = 'z';
             else if (input[i] == '0')
                 input[i] = '9';
-            else if ((input[i] > 'a' && input[i] <= 'z') || (input[i] > 'A' && input[i] <= 'z')
+            else if ((input[i] > 'a' && input[i] <= 'z') || (input[i] > 'A' && input[i] <= 'Z')
             || (input[i] > '0' && input[i] <= '9'))
                 input[i]--;
         }
