@@ -18,7 +18,19 @@ void free_user(User* user) {
     //Reinit user to NULL for wild pointers
     *user = (User){0, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, NULL, NULL};
 }
-
+void encrypt_data(User* user) {
+    encrypt(user->first_name, user->age);
+    encrypt(user->middle_name, user->age);
+    encrypt(user->last_name, user->age);
+    encrypt(user->DOB, user->age);
+    encrypt(user->SSN,user->age);
+    encrypt(user->email, user->age);
+    encrypt(user->address, user->age);
+    encrypt(user->phone_number, user->age);
+    encrypt(user->date_of_account_creation, user->age);
+    encrypt(user->username, user->age);
+    encrypt(user->password, user->age);
+}
 void write_user_data_to_file(FILE* fstream, User* user) {
     fprintf(fstream, "%d\n%s\n%s\n%s\n%s\n%s\n%s\n%d\n%s\n%s\n%s\n%s\n%s\n\n", 
     user->ID, user->first_name, user->middle_name, user->last_name, user->DOB, user->SSN, 
@@ -55,6 +67,7 @@ int store_user_data(User* user) {
         get_user_creation_date(user);
         get_age(user);
         user->ID = 1;
+        encrypt_data(user);
         write_user_data_to_file(fptr, user);
     }
     else {
