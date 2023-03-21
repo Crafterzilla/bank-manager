@@ -163,7 +163,7 @@ bool check_for_ints(char* input, int x, int y) {
     return false;
 }
 
-unsigned long long convert_time_to_unix_time(int month, int day, int year) {
+long long convert_time_to_unix_time(int month, int day, int year) {
     return (31556926 * (year - 1970)) + (86400 * (day - 1)) + (2629743 * (month - 1)); 
 }
 
@@ -178,7 +178,7 @@ bool check_DOB_date(const char* DOB) {
 
     //Check to ensure time isn't greater than current time
     int current_time = time(NULL);
-    const unsigned long long u_time = convert_time_to_unix_time(month, day, year);
+    const long long u_time = convert_time_to_unix_time(month, day, year);
 
     if (u_time > (long long)current_time) {
         return false;
