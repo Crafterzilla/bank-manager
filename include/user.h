@@ -9,6 +9,21 @@
 #include <time.h>
 #include "time_time.h"
 
+enum file_multiple_consants {
+    ID_CONST = 14, 
+    FIRST_NAME_CONST,
+    MIDDLE_NAME_CONST,
+    LAST_NAME_CONST,
+    DOB_CONST,
+    SSN_CONST,
+    EMAIL_CONST,
+    AGE_CONST,
+    ADDRESS_CONST,
+    PHONE_CONST,
+    DOAC_CONST,
+    USERNAME_CONST,
+    PASSWORD_CONST};
+
 typedef struct User {
     unsigned int ID;
     char* first_name; //1
@@ -31,9 +46,11 @@ User get_user(int ID);
 void write_user_data_to_file(FILE* fstream, User* user);
 
 //
-void get_user_creation_date(User* user);
-void get_age(User* user);
-void encrypt_data();
+void set_user_creation_date(User* user);
+void set_age(User* user);
+void encrypt_data(User* user);
+int set_last_user_id(User* user, FILE* fptr);
+char* readline(FILE* fptr, const int line);
 
 int store_user_data(User* user);
 void store_user_passwords(User user);

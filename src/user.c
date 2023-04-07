@@ -38,7 +38,7 @@ void write_user_data_to_file(FILE* fstream, User* user) {
     user->username, user->password);
 }
 
-void get_user_creation_date(User* user) {
+void set_user_creation_date(User* user) {
     Date current = get_current_date();
     //XX-XX-XXXX 10 char + 1 null
     char* current_date = (char*)malloc(sizeof(char) * 11);
@@ -47,13 +47,86 @@ void get_user_creation_date(User* user) {
     user->date_of_account_creation = current_date;
 }
 
-void get_age(User* user) {
+void set_age(User* user) {
     Date age = get_current_age(user->DOB);
     user->age = age.year;
 }
 
+char* readline(FILE* fptr, const int skip_lines) {
+    //Set number of lines to read
+    int lines_read = 0;
+    //Skip number of lines until lines is reached
+    //If positive read fowards, if neg read backwards
+    if (skip_lines >= 0) {
+        while (lines_read != skip_lines) {
+            //Read next char in file
+            char next_char = fgetc(fptr);
+            if (next_char == '\n') //If \n, add to counter
+                lines_read++;
+            else if (next_char == EOF) { //Else if EOF is reached, return NULL
+                return NULL;
+            }
+        } 
+    } 
+    else {
+        while (lines_read != skip_lines) {
+            //Check if fseek returns BOF, if so break and set to BOF
+            if (fseek(fptr, -2, SEEK_CUR) < 0) {
+                fseek(fptr, 0, SEEK_SET);
+                break;
+            }
+            //Get char and get if fptr is \n to add to lines counted
+            char next_char = fgetc(fptr);
+            if (next_char == '\n')
+                lines_read--;
+        }
+    }
+   //At line, find the size of the string. Then,
+    //malloc a new array, put the data in, and then return the
+    //data
+    int size_of_str = 0;
+    char next_char = 'a';
+    while (next_char != '\n') {
+        next_char = fgetc(fptr);
+        size_of_str++;
+    }
+    
+    //Malloc array
+    char* str = (char*)malloc(sizeof(char) * (size_of_str + 1));
+
+    //Init str by reversing the ptr
+    str[size_of_str - 1] = '\0';
+    for (int i = size_of_str - 2; i != -1; i--) {
+        fseek(fptr, -2, SEEK_CUR);
+        next_char = fgetc(fptr);
+        str[i] = next_char;
+    }
+
+    //Set pointer to the end of the str read
+    fseek(fptr, size_of_str - 1, SEEK_CUR);
+    return str;
+}
+
+int set_last_user_id(User* user, FILE* fptr) {
+    //Set ptr to begining
+    fseek(fptr, 0, SEEK_END);
+
+    //Read file and get the id string. Convert to int
+    char* ID_str = readline(fptr, -ID_CONST);
+    int ID = atoi(ID_str);
+
+    //Set the user id plus one
+    user->ID = ID + 1;
+
+    //Free the string and the wild pointer
+    free(ID_str);
+    ID_str = NULL;
+
+    return 0;
+}
+
 int store_user_data(User* user) {
-    //Check if file is blank
+    //Check that file exists
     FILE *fptr = fopen("./data/user_data.txt", "a+");
     if (fptr == NULL) {
         printf("Failed to open user_data.txt\n");
@@ -64,14 +137,25 @@ int store_user_data(User* user) {
     char checkBlank = fgetc(fptr);
     if (checkBlank == EOF) {
         printf("File empty m8\n");
-        get_user_creation_date(user);
-        get_age(user);
         user->ID = 1;
-        encrypt_data(user);
-        write_user_data_to_file(fptr, user);
     }
     else {
-       ungetc(checkBlank, fptr);
+        //Move pointer back one
+        ungetc(checkBlank, fptr);
+
+        //Get last user ID
+        set_last_user_id(user, fptr);
     }
+
+    //Get last variables for user data
+    set_user_creation_date(user);
+    set_age(user);
+    encrypt_data(user);
     
+    //Store user data to file
+    fseek(fptr, 0, SEEK_END);
+    write_user_data_to_file(fptr, user);   
+    fclose(fptr);
+
+    return 0;
 }
