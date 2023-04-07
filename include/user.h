@@ -9,20 +9,22 @@
 #include <time.h>
 #include "time_time.h"
 
-enum file_multiple_consants {
-    ID_CONST = 14, 
-    FIRST_NAME_CONST,
-    MIDDLE_NAME_CONST,
-    LAST_NAME_CONST,
-    DOB_CONST,
-    SSN_CONST,
-    EMAIL_CONST,
-    AGE_CONST,
-    ADDRESS_CONST,
-    PHONE_CONST,
-    DOAC_CONST,
-    USERNAME_CONST,
-    PASSWORD_CONST};
+#define DATA_OFFSET 14
+
+enum datafile_data_offsets {
+    ID_OFFSET, 
+    FIRST_NAME_OFFSET,
+    MIDDLE_NAME_OFFSET,
+    LAST_NAME_OFFSET,
+    DOB_OFFSET,
+    SSN_OFFSET,
+    EMAIL_OFFSET,
+    AGE_OFFSET,
+    ADDRESS_OFFSET,
+    PHONE_OFFSET,
+    DOAC_OFFSET,
+    USERNAME_OFFSET,
+    PASSWORD_OFFSET};
 
 typedef struct User {
     unsigned int ID;
