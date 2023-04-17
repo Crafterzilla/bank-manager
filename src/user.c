@@ -112,7 +112,7 @@ int set_last_user_id(User* user, FILE* fptr) {
     fseek(fptr, 0, SEEK_END);
 
     //Read file and get the id string. Convert to int
-    char* ID_str = readline(fptr, -ID_CONST);
+    char* ID_str = readline(fptr, -DATA_OFFSET - 1);
     int ID = atoi(ID_str);
 
     //Set the user id plus one
@@ -150,7 +150,7 @@ int store_user_data(User* user) {
     //Get last variables for user data
     set_user_creation_date(user);
     set_age(user);
-    encrypt_data(user);
+    // encrypt_data(user);
     
     //Store user data to file
     fseek(fptr, 0, SEEK_END);
@@ -158,4 +158,42 @@ int store_user_data(User* user) {
     fclose(fptr);
 
     return 0;
+}
+
+User get_user(int ID) {
+    User user;
+    FILE* fptr = fopen("./data/user_data.txt", "r");
+
+    //Set fptr to the right place in file
+    char* ID_str = NULL;
+    while (true) {
+        ID_str = readline(fptr, ID_OFFSET);
+        if (ID == atoi(ID_str))
+            break;
+        else
+            free(ID_str);
+    }
+
+
+    const int move = 1;
+    user.ID = ID;
+    user.first_name = readline(fptr, move);
+    user.middle_name = readline(fptr, move);
+    user.last_name = readline(fptr, move);
+    user.DOB = readline(fptr, move);
+    user.SSN = readline(fptr, move);
+    user.email = readline(fptr, move);
+    
+    char* age = readline(fptr, move);
+    user.age = atoi(age);
+    free(age);
+
+    user.address = readline(fptr, move);
+    user.phone_number = readline(fptr, move);
+    user.date_of_account_creation = readline(fptr, move);
+    user.username = readline(fptr, move);
+    user.password = readline(fptr, move);
+
+    fclose(fptr);
+    return user;
 }

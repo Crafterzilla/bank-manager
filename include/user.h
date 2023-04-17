@@ -8,8 +8,10 @@
 #include <stdbool.h>
 #include <time.h>
 #include "time_time.h"
+#include "bank_portal.h"
+// #include "menu.h"
 
-#define DATA_OFFSET 14
+#define DATA_OFFSET 13
 
 enum datafile_data_offsets {
     ID_OFFSET, 
@@ -24,10 +26,11 @@ enum datafile_data_offsets {
     PHONE_OFFSET,
     DOAC_OFFSET,
     USERNAME_OFFSET,
-    PASSWORD_OFFSET};
+    PASSWORD_OFFSET
+};
 
 typedef struct User {
-    unsigned int ID;
+    int ID;
     char* first_name; //1
     char* middle_name; //2
     char* last_name; //3
@@ -40,6 +43,7 @@ typedef struct User {
     char* date_of_account_creation; 
     char* username;
     char* password;
+    // Bank_data bank_data;
 } User;
 
 void create_user(User user);
