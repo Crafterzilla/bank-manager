@@ -95,6 +95,28 @@ int get_int(const char *error_message) {
     return num;
 }
 
+double get_double() {
+    double n = 0.0;
+    bool is_n_double = false;
+
+    while (!is_n_double) {
+        char* str = get_str();
+        size_t len = strlen(str);
+        char* endptr = NULL;
+        
+        n = strtod(str, &endptr);
+
+        if (*endptr == 0) {
+            is_n_double = true;
+        }
+        else {
+            printf("Invaild float/double type. Type in vaild decimal number: ");
+        }
+        free(str);
+    }
+    return n;
+}
+
 char get_yes_or_no(const char* prompt) {
     char choice = 'a';
     while (true) {

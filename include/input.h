@@ -9,7 +9,8 @@
 #include <time.h>
 
 char* get_str();
-int get_int();
+int get_int(const char*);
+double get_double();
 char get_yes_or_no(const char* prompt);
 
 bool invaild_char_in_str(const char* input, const char* invaild_char);
