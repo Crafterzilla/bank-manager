@@ -8,7 +8,7 @@
 #include <stdbool.h>
 #include <time.h>
 #include "time_time.h"
-#include "bank_portal.h"
+// #include "bank_portal.h"
 // #include "menu.h"
 
 #define DATA_OFFSET 13
@@ -46,16 +46,15 @@ typedef struct User {
     // Bank_data bank_data;
 } User;
 
-void create_user(User user);
+void create_user(User*);
 void free_user(User* user);
 User get_user(int ID);
-void write_user_data_to_file(FILE* fstream, User* user);
-
+FILE* return_user_file(int ID, const char* mode);
 //
-void set_user_creation_date(User* user);
+void set_new_creation_date(User* user);
 void set_age(User* user);
 void encrypt_data(User* user);
-int set_last_user_id(User* user, FILE* fptr);
+int set_last_user_id();
 char* readline(FILE* fptr, const int line);
 
 int store_user_data(User* user);

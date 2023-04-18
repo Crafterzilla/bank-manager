@@ -16,13 +16,6 @@ bool login_prompt() {
 }
 
 int sign_in_portal() {
-    // Open data file for reading
-    FILE *user_data_file = fopen("./data/user_data.txt", "r");
-    if (user_data_file == NULL) {
-        printf("Error reading data file\n");
-        return -1;
-    }
-
     // Get Date for portal
     Date date = get_current_date();
     // Ask user to type in username and password
@@ -31,6 +24,8 @@ int sign_in_portal() {
     bool access_granted = false;
     printf("Welcome back to Gull and Bull Bank\n");
     printf("Current Date: %d/%d/%d\n", date.month, date.day, date.year);
+    
+    int ID = 0;
     while (!access_granted) {
         printf("Username: ");
         username = get_str();
@@ -40,43 +35,24 @@ int sign_in_portal() {
 
         printf("Please wait...\n");
 
-        // Check if username and password match with any user
-        if (does_data_exist(user_data_file, username, USERNAME_OFFSET)) {
-            char *user_password = readline(user_data_file, 0);
-            // Check if password exists and grant access if they match
-            if (strcmp(password, user_password) == 0) {
-                printf("Access granted!\n");
+
+        ID = does_data_exist(username, USERNAME_OFFSET);
+        if (ID > 0) {
+            User user = get_user(ID);
+            if (strcmp(user.password, password) == 0)
                 access_granted = true;
-            }
-            else { // Tell user to try again
-                printf("Invaild Password\nTry again\n");
-            }
+            else
+                puts("Invaild pasword");
+            
+            free_user(&user);
+        }
+        else {
+            printf("Username '%s' does not exist\n", username);
+        }
 
-            // Free memory
-            free(user_password);
-            user_password = NULL;
-        }
-        else { // Tell user to type in a vaild user
-            printf("Username does not exist\n");
-            printf("Type in a vaild username or create a new user\n");
-        }
-        // Free memory
-        free(password);
         free(username);
-        password = NULL;
-        username = NULL;
+        free(password);
     }
-
-
-    //Read the ID from file
-    char* ID_str = readline(user_data_file, -DATA_OFFSET);
-    //Convert ID string to integer
-    int ID = atoi(ID_str);
-    //free the string
-    free(ID_str);
-
-
-    fclose(user_data_file); // Close file
 
     return ID; //return the ID of the user for future use
 }
@@ -94,12 +70,6 @@ void get_names(User *new_user) {
 }
 
 void get_username(User* new_user) {
-    //Open file to ensure new user is unique
-    FILE* fptr = fopen("./data/user_data.txt", "r");
-    if (fptr == NULL) {
-        printf("Not enough memory\n");
-        return;
-    }
     // Get username
     while (true) {
         // Make user type in username twice
@@ -111,7 +81,7 @@ void get_username(User* new_user) {
         char *retry = get_str();
 
         //Ensure username is not already taken
-        if (does_data_exist(fptr, new_user->username, USERNAME_OFFSET)) {
+        if (does_data_exist(new_user->username, USERNAME_OFFSET) > 0) {
             printf("Username '%s' is already taken\n", new_user->username);
             free(retry);
             free(new_user->username);
@@ -195,33 +165,48 @@ void user_creation_portal() {
 
     //Init Bank_data
     // Store the data on file and free memory
-    store_user_data(&new_user);
+    create_user(&new_user);
     free_user(&new_user);
 }
 
-bool does_data_exist(FILE *fptr, char *data, const int offset) {
-    fseek(fptr, 0, SEEK_SET);
-
-    // Set the readline ptr to usernames and check the first
-    // username
-    char *tmp_data = readline(fptr, offset);
-    if (strcmp(tmp_data, data) == 0) {
-        free(tmp_data);
-        return true;
-    }
-    free(tmp_data);
-
-    // Check the remaining usernames for possible usernames
+int does_data_exist(char *data, const int offset) {
+    User user;
+    int ID = 1;
     while (true) {
-        char *stored_data = readline(fptr, DATA_OFFSET); // Read username line
-        if (stored_data == NULL)                         // If EOF, return false
-            return false;
-        if (strcmp(stored_data, data) == 0) // If 0, return true
-            return true;
-        // Free data if usernames did not match
-        free(stored_data);
-        stored_data = NULL;
-    }
+        user = get_user(ID);
+        if (user.ID == 0)
+            break;
+        
+        char* compare_str = NULL;
+        switch (offset) {
+            case ID_OFFSET:
+                char ID_str[15] = {0};
+                sprintf(ID_str, "%d", user.ID);
+                compare_str = ID_str;
+                break;
+            case FIRST_NAME_OFFSET: compare_str = user.first_name; break;
+            case MIDDLE_NAME_OFFSET: compare_str = user.middle_name; break;
+            case LAST_NAME_OFFSET: compare_str = user.last_name; break;
+            case DOB_OFFSET: compare_str = user.DOB; break;
+            case SSN_OFFSET: compare_str = user.SSN; break;
+            case EMAIL_OFFSET: compare_str = user.email; break;
+            case AGE_OFFSET: 
+                char age_str[15] = {0};
+                sprintf(age_str, "%d", user.age);
+                compare_str = age_str;
+                break;
+            case ADDRESS_OFFSET: compare_str = user.address; break;
+            case PHONE_OFFSET: compare_str = user.phone_number; break;
+            case DOAC_OFFSET: compare_str = user.date_of_account_creation; break;
+            case USERNAME_OFFSET: compare_str = user.username; break;
+            case PASSWORD_OFFSET: compare_str = user.password; break;
+        }
 
-    return false;
+        if (strcmp(compare_str, data) == 0)
+            return ID;
+        else
+            free_user(&user); 
+        ID++;
+    }
+    return -1;
 }

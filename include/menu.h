@@ -20,6 +20,6 @@ void get_names(User* new_user);
 void get_username(User* new_user);
 void get_password(User* new_user);
 //Username and Password Checks
-bool does_data_exist(FILE*, char* username, const int offset);
+int does_data_exist(char*, const int offset);
 bool is_password_vaild(FILE*, char* username, char* password);
 #endif
