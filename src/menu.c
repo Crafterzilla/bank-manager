@@ -5,7 +5,8 @@ bool login_prompt() {
     char choice = get_yes_or_no("Do you currently bank with Gull & Bull bank (y/n): ");
 
     if (choice == 'y') {
-        sign_in_portal();
+        int ID = sign_in_portal();
+        bank_portal(ID);
     }
     else {
         choice = get_yes_or_no("Would you like to create an account with us (y/n): ");

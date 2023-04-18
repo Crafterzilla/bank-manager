@@ -10,6 +10,7 @@
 #include "time_time.h"
 #include "input.h"
 #include "military_grade_cryption.h"
+#include "bank_portal.h"
 
 bool menu();
 bool login_prompt();

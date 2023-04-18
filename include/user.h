@@ -61,5 +61,5 @@ int store_user_data(User* user);
 void store_user_passwords(User user);
 int set_user_id();
 int set_user_age(char* DOB);
-
+User return_null_user();
 #endif
