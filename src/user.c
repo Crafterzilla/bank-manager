@@ -16,7 +16,7 @@ void free_user(User* user) {
     free(user->password);
 
     //Reinit user to NULL for wild pointers
-    *user = (User){0, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, NULL, NULL};
+    *user = return_null_user();
 }
 void encrypt_data(User* user) {
     encrypt(user->first_name, user->age);
@@ -108,6 +108,10 @@ int set_new_user_id() {
     return i;
 }
 
+User return_null_user(){
+    return (User){0, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, NULL, NULL};
+}
+
 FILE* return_user_file(int ID, const char* mode) {
     char file[100] = {0};
     sprintf(file, "./data/bank_portal/%d.txt", ID);
@@ -120,7 +124,11 @@ void create_user(User* new_user) {
     set_new_creation_date(new_user);
     set_age(new_user);
 
+    int ID = new_user->ID;
     store_user_data(new_user);
+    FILE* fptr = return_user_file(ID, "a");
+    fprintf(fptr, "0\n0\n");
+    fclose(fptr);
 }
 
 int store_user_data(User* user) {
@@ -140,46 +148,11 @@ int store_user_data(User* user) {
     return 0;
 }
 
-// int store_user_data(User* user) {
-//     //Check that file exists
-//     FILE *fptr = fopen("./data/user_data.txt", "a+");
-//     if (fptr == NULL) {
-//         printf("Failed to open user_data.txt\n");
-//         return 1;
-//     }
-
-//     //Check if file is blank
-//     char checkBlank = fgetc(fptr);
-//     if (checkBlank == EOF) {
-//         printf("File empty m8\n");
-//         user->ID = 1;
-//     }
-//     else {
-//         //Move pointer back one
-//         ungetc(checkBlank, fptr);
-
-//         //Get last user ID
-//         set_last_user_id(user, fptr);
-//     }
-
-//     //Get last variables for user data
-//     set_user_creation_date(user);
-//     set_age(user);
-//     // encrypt_data(user);
-    
-//     //Store user data to file
-//     fseek(fptr, 0, SEEK_END);
-//     write_user_data_to_file(fptr, user);   
-//     fclose(fptr);
-
-//     return 0;
-// }
-
 User get_user(int ID) {
     User user;
     FILE* fptr = return_user_file(ID, "r");
     if (!fptr) {  
-        return (User){0, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, NULL, NULL};
+        return return_null_user();
     }
     const int move = 0;
     user.ID = ID;
@@ -203,41 +176,3 @@ User get_user(int ID) {
     fclose(fptr);
     return user;
 }
-// User get_user(int ID) {
-//     User user;
-//     FILE* fptr = fopen("./data/user_data.txt", "r");
-
-//     //Set fptr to the right place in file
-//     char* ID_str = NULL;
-//     while (true) {
-//         ID_str = readline(fptr, ID_OFFSET);
-//         if (ID == atoi(ID_str))
-//             break;
-//         else
-//             free(ID_str);
-//     }
-
-//     free(ID_str);
-
-//     const int move = 0;
-//     user.ID = ID;
-//     user.first_name = readline(fptr, move);
-//     user.middle_name = readline(fptr, move);
-//     user.last_name = readline(fptr, move);
-//     user.DOB = readline(fptr, move);
-//     user.SSN = readline(fptr, move);
-//     user.email = readline(fptr, move);
-    
-//     char* age = readline(fptr, move);
-//     user.age = atoi(age);
-//     free(age);
-
-//     user.address = readline(fptr, move);
-//     user.phone_number = readline(fptr, move);
-//     user.date_of_account_creation = readline(fptr, move);
-//     user.username = readline(fptr, move);
-//     user.password = readline(fptr, move);
-
-//     fclose(fptr);
-//     return user;
-// }
