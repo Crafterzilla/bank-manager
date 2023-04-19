@@ -8,6 +8,7 @@
 #include <stdbool.h>
 #include <time.h>
 #include "time_time.h"
+#include "input.h"
 // #include "bank_portal.h"
 // #include "menu.h"
 
@@ -46,6 +47,10 @@ typedef struct User {
     // Bank_data bank_data;
 } User;
 
+void get_names(User* new_user);
+void get_username(User* new_user);
+void get_password(User* new_user);
+
 void create_user(User*);
 void free_user(User* user);
 User get_user(int ID);
@@ -62,4 +67,5 @@ void store_user_passwords(User user);
 int set_user_id();
 int set_user_age(char* DOB);
 User return_null_user();
+int does_data_exist(char *data, const int offset);
 #endif
