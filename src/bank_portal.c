@@ -15,7 +15,7 @@ void bank_portal(int ID) {
         puts("2.) Deposit money from account");
         puts("3.) Check money in accounts");
         puts("4.) Transfer money between accounts");
-        puts("5.) View personal information");
+        puts("5.) View/Edit personal information");
         puts("6.) View Transaction History");
         puts("7.) Logout");
 
@@ -27,8 +27,7 @@ void bank_portal(int ID) {
             case DEPOSIT: deposit(&bdata); break;
             case TRANSFER: transfer(&bdata); break; 
             case CHECK_ACCOUNTS: check_account_value(&bdata); break;
-            case VIEW_DATA:
-                break;
+            case VIEW_DATA: user_data(&bdata); break;
             case VIEW_HISTORY: print_transaction_history(&bdata); break;
             case LOGOUT: break;
             default:
@@ -299,4 +298,89 @@ void zeelle(User_Bank_Data* bdata) {
     //Free allocated memory in heap
     free(date);
     store_bank_data(&other_bdata);
+}
+
+void user_data(User_Bank_Data* bdata) {
+    enum data_options {VIEW = 1, MODIFY, RETURN};
+    int choice = 0;
+    while (true) {
+        printf("\n1.) View personal data\n");
+        printf("2.) Modify personal data\n");
+        printf("3.) Return\n");
+        
+        printf("Type an option above: ");
+        choice = get_int("Invaild integer: ");
+
+        if (choice >= VIEW && choice <= RETURN)
+            break;
+        else
+            printf("Invaild option\n"); 
+    }
+
+    switch (choice) {
+        case VIEW: print_user_data(&(bdata->user)); break;
+        case MODIFY: modify_user_data(&(bdata->user)); break;
+        case RETURN: break;
+    }
+}
+
+void print_user_data(User* user) {
+    printf("\nUser informtation for User %d: \n", user->ID);
+    printf("First name: %s\n", user->first_name);
+    printf("Middle name: %s\n", user->middle_name);
+    printf("Last name: %s\n", user->last_name);
+    printf("Date of birth: %s\n", user->DOB);
+    printf("SSN: %s\n", user->SSN);
+    printf("Email: %s\n", user->email);
+    printf("Age: %d\n", user->age);
+    printf("Address: %s\n", user->address);
+    printf("Phone number: %s\n", user->phone_number);
+    printf("Date of account creation: %s\n", user->date_of_account_creation);
+    printf("Username: %s\n\n", user->username);
+}
+
+void modify_user_data(User* user) {
+    enum changable_data {NAME = 1, EMAIL, ADDRESS, PHONE, PASSWORD, RETURN};
+
+    puts("\nOption to change info for: ");
+    printf("%d.) Change Name\n", NAME);
+    printf("%d.) Change Email\n", EMAIL);
+    printf("%d.) Change Address\n", ADDRESS);
+    printf("%d.) Change Phone number\n", PHONE);
+    printf("%d.) Change Password\n", PASSWORD);
+    printf("%d.) Return\n", RETURN);
+
+    int choice = 0;
+    while (true) {
+        printf("Type in an option to change: ");
+        choice = get_int("Invaild integer: ");
+        if (choice >= NAME && choice <= RETURN)
+            break;
+        else
+            printf("Invaild option\n");
+    }
+
+    switch (choice) {
+        case NAME:
+            get_names(user);
+            break;
+        case EMAIL:
+            free(user->email);
+            user->email = get_email();
+            break;
+        case ADDRESS:
+            free(user->address);
+            user->address = get_address();
+            break;
+        case PHONE:
+            free(user->phone_number);
+            user->phone_number = get_phone_number();
+            break;
+        case PASSWORD:
+            free(user->password);
+            get_password(user);
+            break;
+        case RETURN: 
+            break;
+    }
 }

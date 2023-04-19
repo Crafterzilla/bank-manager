@@ -31,8 +31,12 @@ void transfer(User_Bank_Data*);
 void transfer_self(User_Bank_Data*);
 void zeelle(User_Bank_Data*);
 
+
+void user_data(User_Bank_Data*);
+void print_user_data(User*);
+void modify_user_data(User*);
+
 void check_account_value(User_Bank_Data*);
-void print_account_data(User_Bank_Data*);
 void print_transaction_history(User_Bank_Data*);
 
 #endif
