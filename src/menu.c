@@ -203,8 +203,10 @@ int does_data_exist(char *data, const int offset) {
             case PASSWORD_OFFSET: compare_str = user.password; break;
         }
 
-        if (strcmp(compare_str, data) == 0)
+        if (strcmp(compare_str, data) == 0) {
+            free_user(&user);
             return ID;
+        }
         else
             free_user(&user); 
         ID++;
