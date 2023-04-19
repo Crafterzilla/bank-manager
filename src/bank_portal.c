@@ -8,9 +8,9 @@ void bank_portal(int ID) {
     printf("Date: %d/%d/%d\n", date.month, date.day, date.year);
 
     int choice = 0;
-    enum options {WITHDRAW = 1, DEPOSIT, TRANSFER, CHECK_ACCOUNTS, VIEW_DATA, VIEW_HISTORY, LOGOUT};
+    enum options {WITHDRAW = 1, DEPOSIT, CHECK_ACCOUNTS, TRANSFER, VIEW_DATA, VIEW_HISTORY, LOGOUT};
     while (choice != LOGOUT) {
-        puts("\nBanking Options: ");
+        puts("Banking Options: ");
         puts("1.) Withdraw money from account");
         puts("2.) Deposit money from account");
         puts("3.) Check money in accounts");
@@ -24,18 +24,14 @@ void bank_portal(int ID) {
 
         switch (choice) {
             case WITHDRAW: withdraw(&bdata); break;
-            case DEPOSIT:
-                break;
+            case DEPOSIT: deposit(&bdata); break;
             case TRANSFER:
                 break; 
-            case CHECK_ACCOUNTS:
-                break;
+            case CHECK_ACCOUNTS: check_account_value(&bdata); break;
             case VIEW_DATA:
                 break;
-            case VIEW_HISTORY:
-                break;
-            case LOGOUT:
-                break;
+            case VIEW_HISTORY: print_transaction_history(&bdata); break;
+            case LOGOUT: break;
             default:
                 printf("%d is an invaild option. Please type an integer from %d to %d\n", choice, WITHDRAW, LOGOUT);
                 break;
@@ -112,34 +108,83 @@ void check_account_value(User_Bank_Data* bdata) {
     printf("Savings account: $%.2lf\n\n", bdata->savings_account_amount);
 }
 
-void withdraw(User_Bank_Data* bdata) {
-    check_account_value(bdata);
-    
+int checking_or_savings() {
     int choice = 0;
     while (true) {
         puts("1.) Checking account");
         puts("2.) Savings account");
         puts("3.) Return");
-        printf("Withdraw from which account: ");
+        printf("Withdraw/Deposit from which account: ");
 
         choice = get_int("Invaild integer: ");
-        if (choice != CHECKING && choice != SAVINGS)
+        if (choice == 3)
+            return 0;
+        else if (choice != CHECKING && choice != SAVINGS)
             printf("Invaid option\n");
-        else if (choice == 3)
-            return;
         else
             break; 
     }
+    return choice;
+}
 
+void withdraw(User_Bank_Data* bdata) {
+    check_account_value(bdata);
+    int choice = checking_or_savings();
+    if (choice == 0)
+        return;
     printf("Withdraw how much (Type in decimal/integer number): ");
     double withdraw_amount = get_double();
+    char* date = get_current_date_str();
 
     switch (choice) {
         case CHECKING:
             bdata->checking_account_amount -= withdraw_amount;
+            fprintf(bdata->transaction_fptr, "%s Checking account withdraw: -$%.2lf\n", date, withdraw_amount);
             break;
         case SAVINGS:
             bdata->savings_account_amount -= withdraw_amount; 
+            fprintf(bdata->transaction_fptr, "%s Savings account withdraw: -$%.2lf\n", date, withdraw_amount);
             break;
     }
+
+    free(date);
+}
+
+void deposit(User_Bank_Data* bdata) {
+    check_account_value(bdata);
+    int choice = checking_or_savings();
+    if (choice == 0)
+        return;
+    printf("Deposit how much (Type in decimal/integer number): ");
+    double deposit_amount = get_double();
+    char* date = get_current_date_str();
+
+    switch (choice) {
+        case CHECKING:
+            bdata->checking_account_amount += deposit_amount;
+            fprintf(bdata->transaction_fptr, "%s Checking account deposit: $%.2lf\n", date, deposit_amount);
+            break;
+        case SAVINGS:
+            bdata->savings_account_amount += deposit_amount; 
+            fprintf(bdata->transaction_fptr, "%s Savings account deposit: $%.2lf\n", date, deposit_amount);
+            break;
+    }
+
+    free(date);
+}
+
+void print_transaction_history(User_Bank_Data* bdata) {
+    printf("\nTransaction history: \n");
+
+    char* line = "test";
+    fseek(bdata->transaction_fptr, 0, SEEK_SET);
+    while (true) {
+        line = readline(bdata->transaction_fptr, 0);
+        if (line == NULL) {
+            return;
+        }
+        printf("%s\n", line);
+        free(line);
+    }
+    puts("");
 }

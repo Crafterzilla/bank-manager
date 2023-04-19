@@ -22,13 +22,13 @@ User_Bank_Data init_bank_data(int ID);
 User_Bank_Data null_bank();
 FILE* transaction_fptr(int ID, const char*);
 void store_bank_data(User_Bank_Data*);
-
+int checking_or_savings();
 //Options in file
 void withdraw(User_Bank_Data*);
 void deposit(User_Bank_Data*);
 void transfer(User_Bank_Data*);
 void check_account_value(User_Bank_Data*);
 void print_account_data(User_Bank_Data*);
-void print_transaction_history(User_Bank_Data*, int lines);
+void print_transaction_history(User_Bank_Data*);
 
 #endif
