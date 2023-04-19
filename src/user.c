@@ -179,3 +179,112 @@ User get_user(int ID) {
     fclose(fptr);
     return user;
 }
+
+int does_data_exist(char *data, const int offset) {
+    User user;
+    int ID = 1;
+    while (true) {
+        user = get_user(ID);
+        if (user.ID == 0)
+            break;
+        
+        char* compare_str = NULL;
+        switch (offset) {
+            case ID_OFFSET:
+                char ID_str[15] = {0};
+                sprintf(ID_str, "%d", user.ID);
+                compare_str = ID_str;
+                break;
+            case FIRST_NAME_OFFSET: compare_str = user.first_name; break;
+            case MIDDLE_NAME_OFFSET: compare_str = user.middle_name; break;
+            case LAST_NAME_OFFSET: compare_str = user.last_name; break;
+            case DOB_OFFSET: compare_str = user.DOB; break;
+            case SSN_OFFSET: compare_str = user.SSN; break;
+            case EMAIL_OFFSET: compare_str = user.email; break;
+            case AGE_OFFSET: 
+                char age_str[15] = {0};
+                sprintf(age_str, "%d", user.age);
+                compare_str = age_str;
+                break;
+            case ADDRESS_OFFSET: compare_str = user.address; break;
+            case PHONE_OFFSET: compare_str = user.phone_number; break;
+            case DOAC_OFFSET: compare_str = user.date_of_account_creation; break;
+            case USERNAME_OFFSET: compare_str = user.username; break;
+            case PASSWORD_OFFSET: compare_str = user.password; break;
+        }
+
+        if (strcmp(compare_str, data) == 0) {
+            free_user(&user);
+            return ID;
+        }
+        else
+            free_user(&user); 
+        ID++;
+    }
+    return -1;
+}
+
+void get_names(User *new_user) {
+    const char *invaild_chars = "!@#$%%^&*()_=+{}[]/><;,`~: ";
+    new_user->first_name = get_str_without_char("What is your first name: ", invaild_chars);
+
+    char choice = get_yes_or_no("Do you have a middle name (y/n): ");
+    if (choice == 'y')
+        new_user->middle_name = get_str_without_char("What is your middle name: ", invaild_chars);
+
+    invaild_chars = "!@#$%%^&*()_=+{}[]/><;,`~:";
+    new_user->last_name = get_str_without_char("What is your last name: ", invaild_chars);
+}
+
+void get_username(User* new_user) {
+    // Get username
+    while (true) {
+        // Make user type in username twice
+        printf("Type in a username: ");
+
+        new_user->username = get_str();
+
+        printf("Retype username: ");
+        char *retry = get_str();
+
+        //Ensure username is not already taken
+        if (does_data_exist(new_user->username, USERNAME_OFFSET) > 0) {
+            printf("Username '%s' is already taken\n", new_user->username);
+            free(retry);
+            free(new_user->username);
+        } 
+        // Compare and ensure usernames match
+        else if (strcmp(new_user->username, retry) == 0) {
+            free(retry);
+            break;
+        } //Username and retry do not match
+        else {
+            free(retry);
+            free(new_user->username);
+            printf("Usernames do not match\n");
+        }
+    }
+}
+
+void get_password(User* new_user) {
+    // Get Password
+    while (true) {
+        // Make user type in password twice
+        printf("Type in a password: ");
+        new_user->password = get_str();
+
+        printf("Retype password: ");
+        char *retry = get_str();
+
+        // Make sure passwords match
+        if (strcmp(new_user->password, retry) == 0) {
+            free(retry);
+            break;
+        }
+        else {
+            free(retry);
+            free(new_user->password);
+            printf("Usernames do not match\n");
+        }
+    }
+}
