@@ -82,6 +82,9 @@ char* readline(FILE* fptr, const int skip_lines) {
     char next_char = 'a';
     while (next_char != '\n') {
         next_char = fgetc(fptr);
+        if (next_char == EOF) {
+            return NULL;
+        }
         size_of_str++;
     }
     
