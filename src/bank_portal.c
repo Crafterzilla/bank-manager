@@ -10,7 +10,7 @@ void bank_portal(int ID) {
     int choice = 0;
     enum options {WITHDRAW = 1, DEPOSIT, CHECK_ACCOUNTS, TRANSFER, VIEW_DATA, VIEW_HISTORY, LOGOUT};
     while (choice != LOGOUT) {
-        puts("Banking Options: ");
+        puts("\nBanking Options: ");
         puts("1.) Withdraw money from account");
         puts("2.) Deposit money from account");
         puts("3.) Check money in accounts");
@@ -25,8 +25,7 @@ void bank_portal(int ID) {
         switch (choice) {
             case WITHDRAW: withdraw(&bdata); break;
             case DEPOSIT: deposit(&bdata); break;
-            case TRANSFER:
-                break; 
+            case TRANSFER: transfer(&bdata); break; 
             case CHECK_ACCOUNTS: check_account_value(&bdata); break;
             case VIEW_DATA:
                 break;
@@ -108,13 +107,13 @@ void check_account_value(User_Bank_Data* bdata) {
     printf("Savings account: $%.2lf\n\n", bdata->savings_account_amount);
 }
 
-int checking_or_savings() {
+int checking_or_savings(const char* prompt) {
     int choice = 0;
     while (true) {
-        puts("1.) Checking account");
+        puts("\n1.) Checking account");
         puts("2.) Savings account");
         puts("3.) Return");
-        printf("Withdraw/Deposit from which account: ");
+        printf(prompt);
 
         choice = get_int("Invaild integer: ");
         if (choice == 3)
@@ -129,7 +128,7 @@ int checking_or_savings() {
 
 void withdraw(User_Bank_Data* bdata) {
     check_account_value(bdata);
-    int choice = checking_or_savings();
+    int choice = checking_or_savings("Withdraw from which account: ");
     if (choice == 0)
         return;
     printf("Withdraw how much (Type in decimal/integer number): ");
@@ -152,7 +151,7 @@ void withdraw(User_Bank_Data* bdata) {
 
 void deposit(User_Bank_Data* bdata) {
     check_account_value(bdata);
-    int choice = checking_or_savings();
+    int choice = checking_or_savings("Deposit into which account: ");
     if (choice == 0)
         return;
     printf("Deposit how much (Type in decimal/integer number): ");
@@ -187,4 +186,98 @@ void print_transaction_history(User_Bank_Data* bdata) {
         free(line);
     }
     puts("");
+}
+
+void transfer(User_Bank_Data* bdata) {
+    enum recipents {SELF = 1, ZEELLE, RETURN};
+    printf("Transfer recipents: \n");
+    puts("1.) Transfer between accounts");
+    puts("2.) Zeelle (Send money to other Gull and Bull users)");
+    puts("3.) Return");
+
+    int choice = 0;
+    while (true) {
+        printf("Type in an option: ");
+        choice = get_int("Invaild integer: ");
+
+        if (choice == SELF || choice == ZEELLE || choice == RETURN)
+            break;
+        else
+            printf("Invaild option\n"); 
+    }
+
+    switch (choice) {
+        case SELF: transfer_self(bdata); break;
+        case ZEELLE: zeelle(bdata); break; 
+        case RETURN: return;
+    }
+}
+
+void transfer_self(User_Bank_Data* bdata) {
+    int account = checking_or_savings("Which account are you transfering money to: ");
+
+    printf("Type in amount to transfer over: ");
+    double amount = get_double();
+    char* date = get_current_date_str();
+
+    switch (account) {
+        case CHECKING:
+            bdata->checking_account_amount += amount;
+            bdata->savings_account_amount -= amount; 
+            fprintf(bdata->transaction_fptr, "%s Transfer from savings to checking: -$%.2lf\n", date, amount);
+            break;
+        case SAVINGS: 
+            bdata->checking_account_amount -= amount;
+            bdata->savings_account_amount += amount;
+            fprintf(bdata->transaction_fptr, "%s Transfer from checking to savings: $%.2lf\n", date, amount);
+            break;
+        case 3:
+            break;
+    } 
+    free(date);
+}
+
+void zeelle(User_Bank_Data* bdata) {
+    printf("\nZeelee Portal: \n");
+    printf("To transfer money to other account, type in their phone number below\n");
+
+    int ID = 0;
+    while (ID <= 0 && ID != bdata->user.ID) {
+        char* phone_num = get_phone_number();
+        printf("Searching for user...\n");
+        ID = does_data_exist(phone_num, PHONE_OFFSET);
+        
+        if (ID <= 0) {
+            char choice = get_yes_or_no("User not found. Try again (y/n): ");
+            if (choice == 'n')
+                return;
+        }
+
+        free(phone_num);
+    }
+
+    User_Bank_Data other_bdata = init_bank_data(ID);
+
+    printf("User with name %s %s found!\n", other_bdata.user.first_name, other_bdata. user.last_name);
+    char choice = get_yes_or_no("Is user correct (y/n): ");
+    if (choice == 'n') {
+        store_bank_data(&other_bdata);
+        return;
+    }
+
+    printf("Type in amount to be sent: ");
+    double amount = get_double();
+
+    other_bdata.checking_account_amount += amount;
+    bdata->checking_account_amount -= amount;
+
+    char* date = get_current_date_str();
+    fprintf(bdata->transaction_fptr, "%s Sent money to user %s through Zeelle: -$%.2lf\n", 
+    date, other_bdata.user.first_name, amount);
+
+    fprintf(other_bdata.transaction_fptr, "%s Received money from user %s through Zeelle: $%.2lf\n",
+    date, bdata->user.first_name, amount);
+
+    free(date);
+    store_bank_data(&other_bdata);
 }

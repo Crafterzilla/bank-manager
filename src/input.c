@@ -373,7 +373,7 @@ char* get_phone_number() {
     //
     char* phone_num = "";
     while (true) {
-        printf("Type in your phone number in XXX-XXX-XXXX format: ");
+        printf("Type in phone number in XXX-XXX-XXXX format: ");
         phone_num = get_str();
 
         if (strlen(phone_num) != 12 || phone_num[3] != '-' || phone_num[7] != '-') {
