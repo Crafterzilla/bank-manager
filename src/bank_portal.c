@@ -134,6 +134,7 @@ void withdraw(User_Bank_Data* bdata) {
     printf("Withdraw how much (Type in decimal/integer number): ");
     double withdraw_amount = get_double();
     char* date = get_current_date_str();
+    fseek(bdata->transaction_fptr, 0, SEEK_END);
 
     switch (choice) {
         case CHECKING:
@@ -157,6 +158,7 @@ void deposit(User_Bank_Data* bdata) {
     printf("Deposit how much (Type in decimal/integer number): ");
     double deposit_amount = get_double();
     char* date = get_current_date_str();
+    fseek(bdata->transaction_fptr, 0, SEEK_END);
 
     switch (choice) {
         case CHECKING:
@@ -219,6 +221,7 @@ void transfer_self(User_Bank_Data* bdata) {
     printf("Type in amount to transfer over: ");
     double amount = get_double();
     char* date = get_current_date_str();
+    fseek(bdata->transaction_fptr, 0, SEEK_END);
 
     switch (account) {
         case CHECKING:
@@ -241,6 +244,9 @@ void zeelle(User_Bank_Data* bdata) {
     printf("\nZeelee Portal: \n");
     printf("To transfer money to other account, type in their phone number below\n");
 
+    //Find user through their phone number using does_data_exist function
+    //return the ID once done and keep retrying until user if found or if user
+    //gives up
     int ID = 0;
     while (ID <= 0 && ID != bdata->user.ID) {
         char* phone_num = get_phone_number();
@@ -256,8 +262,10 @@ void zeelle(User_Bank_Data* bdata) {
         free(phone_num);
     }
 
+    //Load the other user's bank account into memory
     User_Bank_Data other_bdata = init_bank_data(ID);
 
+    //Check to make sure user is the correct user in case of wrong number
     printf("User with name %s %s found!\n", other_bdata.user.first_name, other_bdata. user.last_name);
     char choice = get_yes_or_no("Is user correct (y/n): ");
     if (choice == 'n') {
@@ -265,19 +273,30 @@ void zeelle(User_Bank_Data* bdata) {
         return;
     }
 
+    //Type in amount to send
     printf("Type in amount to be sent: ");
     double amount = get_double();
 
+    //Add to other user, take away from self
     other_bdata.checking_account_amount += amount;
     bdata->checking_account_amount -= amount;
 
+    //Get the current date to put all transaction into their
+    //repective logs    
     char* date = get_current_date_str();
+
+    //Put pointer to end. Then, type out the transaction that occured
+    fseek(bdata->transaction_fptr, 0, SEEK_END);
     fprintf(bdata->transaction_fptr, "%s Sent money to user %s through Zeelle: -$%.2lf\n", 
     date, other_bdata.user.first_name, amount);
 
+    //Put the pointer to end for other user. Then store the transaction that 
+    //occurred for that user
+    fseek(other_bdata.transaction_fptr, 0, SEEK_END);
     fprintf(other_bdata.transaction_fptr, "%s Received money from user %s through Zeelle: $%.2lf\n",
     date, bdata->user.first_name, amount);
 
+    //Free allocated memory in heap
     free(date);
     store_bank_data(&other_bdata);
 }
