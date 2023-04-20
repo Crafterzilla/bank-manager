@@ -47,60 +47,46 @@ void set_age(User* user) {
 }
 
 char* readline(FILE* fptr, const int skip_lines) {
-    //Set number of lines to read
-    int lines_read = 0;
-    //Skip number of lines until lines is reached
-    //If positive read fowards, if neg read backwards
-    if (skip_lines >= 0) {
-        while (lines_read != skip_lines) {
-            //Read next char in file
-            char next_char = fgetc(fptr);
-            if (next_char == '\n') //If \n, add to counter
-                lines_read++;
-            else if (next_char == EOF) { //Else if EOF is reached, return NULL
-                return NULL;
-            }
-        } 
-    } 
-    else {
-        while (lines_read != skip_lines) {
-            //Check if fseek returns BOF, if so break and set to BOF
-            if (fseek(fptr, -2, SEEK_CUR) < 0) {
-                fseek(fptr, 0, SEEK_SET);
-                break;
-            }
-            //Get char and get if fptr is \n to add to lines counted
-            char next_char = fgetc(fptr);
-            if (next_char == '\n')
-                lines_read--;
-        }
-    }
-   //At line, find the size of the string. Then,
-    //malloc a new array, put the data in, and then return the
-    //data
-    int size_of_str = 0;
-    char next_char = 'a';
-    while (next_char != '\n') {
-        next_char = fgetc(fptr);
-        if (next_char == EOF) {
-            return NULL;
-        }
-        size_of_str++;
-    }
-    
-    //Malloc array
-    char* str = (char*)malloc(sizeof(char) * (size_of_str + 1));
+    //Reading 0 reads current line
+    //Reading > 0 reads lines after
+    //Returns NULL if BOF or EOF is reached
+    //Expects fptr to be at the begining of some line
 
-    //Init str by reversing the ptr
-    str[size_of_str - 1] = '\0';
-    for (int i = size_of_str - 2; i != -1; i--) {
-        fseek(fptr, -2, SEEK_CUR);
+    //Init counter variables to find size of str and the amount of lines to skip
+    int line_size = 0, line_counter = 0;
+    char next_char = 0;
+
+    /* Algorithm: Read a char from the file and increment pointer by
+    one (done by fgetc). If EOF or reached, return NULL. If '\n' is found,
+    if the number of lines were counted, then break from the loop. Else this is not
+    the line and continue to next line where line_size is 0 again and line counter is incremented
+    by one. Else increment line size
+    */
+    while (true) {
+        next_char = fgetc(fptr);
+        if (next_char == EOF)
+            return NULL;
+        else if (next_char == '\n' && line_counter == skip_lines)
+            break;
+        else if (next_char == '\n') {
+                line_size = 0;
+                line_counter++;
+        }
+        else
+            line_size++; 
+    }
+
+    //Create array of null char with line size found
+    char* str = (char*)calloc(sizeof(char), line_size + 1);
+    //Move pointer back to the begining of the line
+    fseek(fptr, -line_size - 1, SEEK_CUR);
+    //Init str with chars from file with fgetc 
+    for (int i = 0; i < line_size; i++) {
         next_char = fgetc(fptr);
         str[i] = next_char;
     }
-
-    //Set pointer to the end of the str read
-    fseek(fptr, size_of_str - 1, SEEK_CUR);
+    //Move pointer + 1
+    next_char = fgetc(fptr);
     return str;
 }
 
