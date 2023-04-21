@@ -9,13 +9,12 @@
 #include <time.h>
 #include "time_time.h"
 #include "input.h"
-// #include "bank_portal.h"
-// #include "menu.h"
 
-#define DATA_OFFSET 13
+#define READ_ONE_LINE 1
+#define DATA_OFFSET 14
 
 enum datafile_data_offsets {
-    ID_OFFSET, 
+    ID_OFFSET = 1, 
     FIRST_NAME_OFFSET,
     MIDDLE_NAME_OFFSET,
     LAST_NAME_OFFSET,

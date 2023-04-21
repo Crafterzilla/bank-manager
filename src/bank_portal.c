@@ -77,7 +77,7 @@ User_Bank_Data init_bank_data(int ID) {
     bdata.checking_account_amount = strtod(double_str, &tmp);
     free(double_str);
 
-    double_str = readline(fptr, 0);
+    double_str = readline(fptr, READ_ONE_LINE);
     bdata.savings_account_amount = strtod(double_str, &tmp);
     free(double_str);
 
@@ -179,7 +179,7 @@ void print_transaction_history(User_Bank_Data* bdata) {
     char* line = "test";
     fseek(bdata->transaction_fptr, 0, SEEK_SET);
     while (true) {
-        line = readline(bdata->transaction_fptr, 0);
+        line = readline(bdata->transaction_fptr, READ_ONE_LINE);
         if (line == NULL) {
             return;
         }

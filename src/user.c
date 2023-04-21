@@ -46,47 +46,20 @@ void set_age(User* user) {
     user->age = age.year;
 }
 
-char* readline(FILE* fptr, const int skip_lines) {
-    //Reading 0 reads current line
-    //Reading > 0 reads lines after
-    //Returns NULL if BOF or EOF is reached
-    //Expects fptr to be at the begining of some line
 
-    //Init counter variables to find size of str and the amount of lines to skip
-    int line_size = 0, line_counter = 0;
-    char next_char = 0;
-
-    /* Algorithm: Read a char from the file and increment pointer by
-    one (done by fgetc). If EOF or reached, return NULL. If '\n' is found,
-    if the number of lines were counted, then break from the loop. Else this is not
-    the line and continue to next line where line_size is 0 again and line counter is incremented
-    by one. Else increment line size
-    */
-    while (true) {
-        next_char = fgetc(fptr);
-        if (next_char == EOF)
+char* readline(FILE* fptr, int skip_lines) {
+    char* str = NULL; //Init pointer for string
+    for (int i = 0; i < skip_lines; i++) {
+        free(str); //Free str if not the proper line reached
+        size_t bytes = 0; ssize_t size = 0; //Init variables needed
+        size = getline(&str, &bytes, fptr); //Read line from file
+        if (size == EOF) //If size is zero or EOF is reached, return null
             return NULL;
-        else if (next_char == '\n' && line_counter == skip_lines)
-            break;
-        else if (next_char == '\n') {
-                line_size = 0;
-                line_counter++;
+        
+        if (str[size - 1] == '\n') { //Remove '\n' from end of string is it contains it
+            str[size - 1] = '\0'; 
         }
-        else
-            line_size++; 
     }
-
-    //Create array of null char with line size found
-    char* str = (char*)calloc(sizeof(char), line_size + 1);
-    //Move pointer back to the begining of the line
-    fseek(fptr, -line_size - 1, SEEK_CUR);
-    //Init str with chars from file with fgetc 
-    for (int i = 0; i < line_size; i++) {
-        next_char = fgetc(fptr);
-        str[i] = next_char;
-    }
-    //Move pointer + 1
-    next_char = fgetc(fptr);
     return str;
 }
 
@@ -143,24 +116,23 @@ User get_user(int ID) {
     if (!fptr) {  
         return return_null_user();
     }
-    const int move = 0;
     user.ID = ID;
-    user.first_name = readline(fptr, 1);
-    user.middle_name = readline(fptr, move);
-    user.last_name = readline(fptr, move);
-    user.DOB = readline(fptr, move);
-    user.SSN = readline(fptr, move);
-    user.email = readline(fptr, move);
+    user.first_name = readline(fptr, 2);
+    user.middle_name = readline(fptr, READ_ONE_LINE);
+    user.last_name = readline(fptr, READ_ONE_LINE); 
+    user.DOB = readline(fptr, READ_ONE_LINE);
+    user.SSN = readline(fptr, READ_ONE_LINE);
+    user.email = readline(fptr, READ_ONE_LINE);
     
-    char* age = readline(fptr, move);
+    char* age = readline(fptr, READ_ONE_LINE);
     user.age = atoi(age);
     free(age);
 
-    user.address = readline(fptr, move);
-    user.phone_number = readline(fptr, move);
-    user.date_of_account_creation = readline(fptr, move);
-    user.username = readline(fptr, move);
-    user.password = readline(fptr, move);
+    user.address = readline(fptr, READ_ONE_LINE);
+    user.phone_number = readline(fptr, READ_ONE_LINE);
+    user.date_of_account_creation = readline(fptr, READ_ONE_LINE);
+    user.username = readline(fptr, READ_ONE_LINE);
+    user.password = readline(fptr, READ_ONE_LINE);
 
     fclose(fptr);
     return user;
