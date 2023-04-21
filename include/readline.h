@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
 char* readline(FILE* fptr, const int skip_lines);
     #ifdef _WIN32
