@@ -46,23 +46,6 @@ void set_age(User* user) {
     user->age = age.year;
 }
 
-
-char* readline(FILE* fptr, int skip_lines) {
-    char* str = NULL; //Init pointer for string
-    for (int i = 0; i < skip_lines; i++) {
-        free(str); //Free str if not the proper line reached
-        size_t bytes = 0; ssize_t size = 0; //Init variables needed
-        size = getline(&str, &bytes, fptr); //Read line from file
-        if (size == EOF) //If size is zero or EOF is reached, return null
-            return NULL;
-        
-        if (str[size - 1] == '\n') { //Remove '\n' from end of string is it contains it
-            str[size - 1] = '\0'; 
-        }
-    }
-    return str;
-}
-
 int set_new_user_id() {
     int i = 1;
     while (return_user_file(i, "r") != NULL)
@@ -117,7 +100,7 @@ User get_user(int ID) {
         return return_null_user();
     }
     user.ID = ID;
-    user.first_name = readline(fptr, 2);
+    user.first_name = readline(fptr, READ_ONE_LINE + 1);
     user.middle_name = readline(fptr, READ_ONE_LINE);
     user.last_name = readline(fptr, READ_ONE_LINE); 
     user.DOB = readline(fptr, READ_ONE_LINE);

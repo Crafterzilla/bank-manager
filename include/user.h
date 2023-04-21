@@ -9,8 +9,8 @@
 #include <time.h>
 #include "time_time.h"
 #include "input.h"
+#include "readline.h"
 
-#define READ_ONE_LINE 1
 #define DATA_OFFSET 14
 
 enum datafile_data_offsets {
@@ -59,7 +59,6 @@ void set_new_creation_date(User* user);
 void set_age(User* user);
 void encrypt_data(User* user);
 int set_last_user_id();
-char* readline(FILE* fptr, const int line);
 
 int store_user_data(User* user);
 void store_user_passwords(User user);

@@ -6,6 +6,7 @@
 #include "user.h"
 #include "time_time.h"
 #include "input.h"
+#include "readline.h"
 
 enum account_type {CHECKING = 1, SAVINGS};
 
